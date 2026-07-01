@@ -28,10 +28,8 @@ const state = {
   speciesCache: {},
   evolutionCache: {},
   typeCache: {},
-  visibleIds: [],
   selectedTypes: new Set(),
   searchTerm: '',
-  sortMode: 'id',
   displayedCount: 0,
   loading: false,
   loadingDetail: false,
@@ -200,7 +198,7 @@ function createCard(p, index) {
     </div>
     <div class="card-name">${p.name}</div>
     <div class="card-types" id="types-${p.id}">
-      <span class="loading-state" style="padding:0;grid-column:auto;color:var(--text-muted);font-size:10px">loading…</span>
+      <span class="card-type-placeholder">—</span>
     </div>
   `;
   card.addEventListener('click', () => openDetail(p.id));
@@ -560,26 +558,22 @@ async function init() {
   state.loading = true;
   renderGrid();
 
-  const loadTimeout = setTimeout(() => {
-    if (state.loading) {
-      state.loading = false;
-      const grid = $('#pokemonGrid');
-      grid.innerHTML = `<div class="empty-state visible"><div class="empty-icon">⌛</div><h3>Loading timed out</h3><p>PokeAPI might be slow — try refreshing</p></div>`;
-    }
-  }, 30000);
-
   try {
-    await fetchAllPokemon();
-    clearTimeout(loadTimeout);
+    await Promise.race([
+      fetchAllPokemon(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('PokeAPI request timed out after 15s')), 15000)
+      ),
+    ]);
     state.loading = false;
     state.displayedCount = 0;
     $('#pokemonGrid').innerHTML = '';
     renderGrid();
   } catch (e) {
-    clearTimeout(loadTimeout);
-    state.loading = false;
     const grid = $('#pokemonGrid');
-    grid.innerHTML = `<div class="empty-state visible"><div class="empty-icon">⚠️</div><h3>Failed to load Pokédex</h3><p>Check your connection and try again</p></div>`;
+    grid.innerHTML = `<div class="empty-state visible"><div class="empty-icon">${e.message.includes('timed out') ? '⌛' : '⚠️'}</div><h3>${e.message.includes('timed out') ? 'Loading timed out' : 'Failed to load Pokédex'}</h3><p>${e.message.includes('timed out') ? 'PokeAPI might be slow — try refreshing' : 'Check your connection and try again'}</p></div>`;
+  } finally {
+    state.loading = false;
   }
   scrollObserver.observe($('#loadMore'));
 }

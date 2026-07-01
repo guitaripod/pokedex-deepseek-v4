@@ -20,11 +20,14 @@ export async function onRequest(context) {
       headers: { 'User-Agent': 'pokedex-cf/1.0' },
     });
 
+    const body = await response.text();
     const headers = new Headers(response.headers);
+
     headers.set('Access-Control-Allow-Origin', '*');
+    headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
     headers.set('Cache-Control', 'public, max-age=86400, s-maxage=604800');
 
-    return new Response(response.body, {
+    return new Response(body, {
       status: response.status,
       headers,
     });
