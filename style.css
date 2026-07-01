@@ -82,6 +82,14 @@ body{
   gap:20px;
   flex-wrap:wrap;
 }
+.header-subtitle{
+  max-width:1400px;
+  margin:4px auto 0;
+  font-size:11px;
+  color:var(--text-muted);
+  opacity:0.6;
+  text-align:center;
+}
 .logo{
   font-size:22px;
   font-weight:800;
