@@ -291,7 +291,7 @@ function createDetailContent(pokemon, species) {
         <img class="detail-artwork" id="detailArtwork" src="${artwork}" alt="${name}">
       </div>
       <div class="detail-artwork-controls">
-        <button class="shiny-toggle" id="shinyToggle">✨ Shiny</button>
+        <button class="shiny-toggle" id="shinyToggle" data-normal="${artwork}" data-shiny="${shinyArtwork}">✨ Shiny</button>
       </div>
       <div class="detail-number">#${padNum(id)}</div>
       <div class="detail-name">${name}</div>
@@ -357,17 +357,6 @@ function createDetailContent(pokemon, species) {
       </div>
     </div>
   `;
-
-  // Shiny toggle
-  const toggleBtn = container.querySelector('#shinyToggle');
-  const detailImg = container.querySelector('#detailArtwork');
-  if (toggleBtn && detailImg) {
-    toggleBtn.addEventListener('click', () => {
-      const isShiny = toggleBtn.classList.toggle('active');
-      detailImg.src = isShiny ? shinyArtwork : artwork;
-      toggleBtn.textContent = isShiny ? '✨ Normal' : '✨ Shiny';
-    });
-  }
 
   return container;
 }
@@ -474,6 +463,17 @@ $('#detailModal').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeDetail();
+});
+
+// Shiny toggle (delegated — catches inline data-shiny buttons)
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.shiny-toggle[data-shiny]');
+  if (!btn) return;
+  const img = btn.closest('.modal-body')?.querySelector('#detailArtwork');
+  if (!img) return;
+  const isShiny = btn.classList.toggle('active');
+  img.src = isShiny ? btn.dataset.shiny : btn.dataset.normal;
+  btn.textContent = isShiny ? '✨ Normal' : '✨ Shiny';
 });
 
 // --- Search ---
