@@ -501,6 +501,8 @@ body{
   justify-content:center;
   gap:8px;
   margin-top:4px;
+  position:relative;
+  z-index:2;
 }
 .shiny-toggle{
   font-size:11px;
