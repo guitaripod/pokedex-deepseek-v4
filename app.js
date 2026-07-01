@@ -93,8 +93,8 @@ function getFilteredPokemon() {
   if (state.selectedTypes.size > 0) {
     list = list.filter(p => {
       const detail = state.pokemonCache[p.id];
-      if (!detail || !detail.types) return false;
-      return detail.types.some(t => state.selectedTypes.has(t.type.name));
+      if (!detail || typeof detail !== 'object' || !detail.types || !Array.isArray(detail.types)) return false;
+      return detail.types.some(t => t?.type?.name && state.selectedTypes.has(t.type.name));
     });
   }
   return list;
@@ -559,13 +559,24 @@ async function init() {
   renderTypeFilters();
   state.loading = true;
   renderGrid();
+
+  const loadTimeout = setTimeout(() => {
+    if (state.loading) {
+      state.loading = false;
+      const grid = $('#pokemonGrid');
+      grid.innerHTML = `<div class="empty-state visible"><div class="empty-icon">⌛</div><h3>Loading timed out</h3><p>PokeAPI might be slow — try refreshing</p></div>`;
+    }
+  }, 30000);
+
   try {
     await fetchAllPokemon();
+    clearTimeout(loadTimeout);
     state.loading = false;
     state.displayedCount = 0;
     $('#pokemonGrid').innerHTML = '';
     renderGrid();
   } catch (e) {
+    clearTimeout(loadTimeout);
     state.loading = false;
     const grid = $('#pokemonGrid');
     grid.innerHTML = `<div class="empty-state visible"><div class="empty-icon">⚠️</div><h3>Failed to load Pokédex</h3><p>Check your connection and try again</p></div>`;
@@ -573,4 +584,8 @@ async function init() {
   scrollObserver.observe($('#loadMore'));
 }
 
-document.addEventListener('DOMContentLoaded', init);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
