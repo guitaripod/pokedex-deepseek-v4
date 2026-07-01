@@ -245,7 +245,7 @@ async function openDetail(id) {
     animateStats();
 
     // Fetch evolution chain
-    if (species.evolution_chain?.url) {
+    if (species?.evolution_chain?.url) {
       const evoId = idFromUrl(species.evolution_chain.url);
       const evoData = await getEvolutionChain(evoId);
       renderEvolution(evoData, id);
@@ -269,9 +269,9 @@ function createDetailContent(pokemon, species) {
   const artwork = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
   const shinyArtwork = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`;
 
-  const flavorEntry = species.flavor_text_entries?.find(e => e.language.name === 'en');
+  const flavorEntry = species?.flavor_text_entries?.find(e => e.language.name === 'en');
   const flavorText = flavorEntry ? flavorEntry.flavor_text.replace(/[\n\f]/g, ' ') : 'No description available.';
-  const genus = species.genera?.find(g => g.language.name === 'en')?.genus || '';
+  const genus = species?.genera?.find(g => g.language.name === 'en')?.genus || '';
 
   const stats = pokemon.stats || [];
   const statTotal = stats.reduce((s, st) => s + st.base_stat, 0);
@@ -305,9 +305,9 @@ function createDetailContent(pokemon, species) {
         <div class="meta-item"><div class="meta-label">Weight</div><div class="meta-value">${weight} kg</div></div>
         <div class="meta-item"><div class="meta-label">Gender</div><div class="meta-value" style="font-size:13px">${genderStr}</div></div>
         <div class="meta-item"><div class="meta-label">Base Exp</div><div class="meta-value">${pokemon.base_experience ?? '—'}</div></div>
-        <div class="meta-item"><div class="meta-label">Catch Rate</div><div class="meta-value">${species.capture_rate ?? '—'}</div></div>
+        <div class="meta-item"><div class="meta-label">Catch Rate</div><div class="meta-value">${species?.capture_rate ?? '—'}</div></div>
         <div class="meta-item"><div class="meta-label">Egg Groups</div><div class="meta-value" style="font-size:12px;text-transform:capitalize">
-          ${(species.egg_groups?.map(e => e.name).join(', ')) || '—'}
+          ${(species?.egg_groups?.map(e => e.name).join(', ')) || '—'}
         </div></div>
       </div>
 
