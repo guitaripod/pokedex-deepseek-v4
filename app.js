@@ -358,16 +358,16 @@ function createDetailContent(pokemon, species) {
     </div>
   `;
 
-  // Shiny toggle via event delegation
-  container.addEventListener('click', e => {
-    const toggle = e.target.closest('#shinyToggle');
-    if (!toggle) return;
-    const img = container.querySelector('#detailArtwork');
-    if (!img) return;
-    const isShiny = toggle.classList.toggle('active');
-    img.src = isShiny ? shinyArtwork : artwork;
-    toggle.textContent = isShiny ? '✨ Shiny' : '✨ Normal';
-  });
+  // Shiny toggle
+  const toggleBtn = container.querySelector('#shinyToggle');
+  const detailImg = container.querySelector('#detailArtwork');
+  if (toggleBtn && detailImg) {
+    toggleBtn.addEventListener('click', () => {
+      const isShiny = toggleBtn.classList.toggle('active');
+      detailImg.src = isShiny ? shinyArtwork : artwork;
+      toggleBtn.textContent = isShiny ? '✨ Normal' : '✨ Shiny';
+    });
+  }
 
   return container;
 }
