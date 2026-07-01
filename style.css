@@ -277,6 +277,8 @@ body{
 
 /* Card */
 .pokemon-card{
+  opacity:0;
+  transform:translateY(12px) scale(0.97);
   background:var(--bg-card);
   border:1px solid var(--border-color);
   border-radius:var(--radius-md);
@@ -285,7 +287,10 @@ body{
   transition:all var(--transition);
   position:relative;
   overflow:hidden;
-  animation:cardFadeIn 0.35s ease both;
+  animation-name:cardFadeIn;
+  animation-duration:0.35s;
+  animation-timing-function:ease;
+  animation-fill-mode:both;
 }
 .pokemon-card::before{
   content:'';
@@ -475,6 +480,7 @@ body{
   position:absolute;
   inset:0;
   opacity:0.12;
+  pointer-events:none;
 }
 .detail-artwork-wrap{
   position:relative;

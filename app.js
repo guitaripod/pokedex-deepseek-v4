@@ -74,7 +74,11 @@ function cacheWithResolve(cache, key, fetcher) {
 }
 
 async function getPokemon(id) { return cacheWithResolve(state.pokemonCache, id, () => apiFetch(`pokemon/${id}`)); }
-async function getSpecies(id) { return cacheWithResolve(state.speciesCache, id, () => apiFetch(`pokemon-species/${id}`)); }
+async function getSpecies(id) {
+  try {
+    return await cacheWithResolve(state.speciesCache, id, () => apiFetch(`pokemon-species/${id}`));
+  } catch { return null; }
+}
 async function getEvolutionChain(id) { return cacheWithResolve(state.evolutionCache, id, () => apiFetch(`evolution-chain/${id}`)); }
 async function getTypeData(id) { return cacheWithResolve(state.typeCache, id, () => apiFetch(`type/${id}`)); }
 
@@ -275,7 +279,7 @@ function createDetailContent(pokemon, species) {
   const height = (pokemon.height / 10).toFixed(1);
   const weight = (pokemon.weight / 10).toFixed(1);
 
-  const genderRate = species.gender_rate;
+  const genderRate = species?.gender_rate ?? -1;
   const genderStr = genderRate === -1 ? 'Genderless'
     : `${((1 - genderRate/8)*100).toFixed(0)}% ♂ / ${((genderRate/8)*100).toFixed(0)}% ♀`;
 
@@ -354,18 +358,16 @@ function createDetailContent(pokemon, species) {
     </div>
   `;
 
-  // Shiny toggle
-  setTimeout(() => {
-    const toggle = container.querySelector('#shinyToggle');
+  // Shiny toggle via event delegation
+  container.addEventListener('click', e => {
+    const toggle = e.target.closest('#shinyToggle');
+    if (!toggle) return;
     const img = container.querySelector('#detailArtwork');
-    if (toggle && img) {
-      toggle.addEventListener('click', () => {
-        const isShiny = toggle.classList.toggle('active');
-        img.src = isShiny ? shinyArtwork : artwork;
-        toggle.textContent = isShiny ? '✨ Shiny' : '✨ Normal';
-      });
-    }
-  }, 0);
+    if (!img) return;
+    const isShiny = toggle.classList.toggle('active');
+    img.src = isShiny ? shinyArtwork : artwork;
+    toggle.textContent = isShiny ? '✨ Shiny' : '✨ Normal';
+  });
 
   return container;
 }
