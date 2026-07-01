@@ -230,7 +230,7 @@ async function openDetail(id) {
   state.loadingDetail = true;
   const modal = $('#detailModal');
   const body = $('#modalBody');
-  modal.hidden = false;
+  modal.classList.add('open');
   document.body.style.overflow = 'hidden';
   body.innerHTML = `<div class="modal-loader"><div class="loader"></div></div>`;
 
@@ -460,7 +460,7 @@ async function renderEffectiveness(pokemon) {
 // --- Close Modal ---
 function closeDetail() {
   const modal = $('#detailModal');
-  modal.hidden = true;
+  modal.classList.remove('open');
   document.body.style.overflow = '';
   $('#modalBody').innerHTML = '';
 }
